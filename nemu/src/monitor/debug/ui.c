@@ -69,6 +69,25 @@ static int cmd_info_r(char *args)
     return 0;  
 }  
 
+static int cmd_saomiao(char *args)
+{
+	char *arg=strtok(NULL," ");  
+	char *argg=strtok(NULL," ");
+    swaddr_t zanshi;
+	int j;
+	sscanf(arg,"%d",&j);
+	sscanf(argg,"%x",&zanshi);
+	printf("0x%x:",zanshi);
+	int iii;
+	for(iii=0;iii<j;iii++){
+		printf("%08x",swaddr_read(zanshi,4)&0xffffffff); 
+                printf(" ");
+                zanshi+=4;
+	}
+	printf("\n");
+	return 0;
+}
+
 static struct {
 	char *name;
 	char *description;
@@ -79,6 +98,7 @@ static struct {
 	{ "q", "Exit NEMU", cmd_q },
         { "si","Single step execution N instructions then pause",cmd_si },
         { "info","Print the values of all registers",cmd_info_r},
+        {"x", "sao miao nei cun",cmd_saomiao},
        
 	/* TODO: Add more commands */
 
