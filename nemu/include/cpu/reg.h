@@ -17,7 +17,7 @@ enum { R_AL, R_CL, R_DL, R_BL, R_AH, R_CH, R_DH, R_BH };
 typedef struct {
         union{
         
-	struct {
+	union {
 		uint32_t _32;
 		uint16_t _16;
 		uint8_t _8[2];
@@ -35,7 +35,8 @@ typedef struct {
                  uint32_t esp;
                  uint32_t ebp;
                  uint32_t esi;
-                 uint32_t edi;};
+                 uint32_t edi;
+               };
 };
 	swaddr_t eip;
 
