@@ -57,6 +57,18 @@ char *arg = strtok(NULL, " ");
 	return 0;
 }
 
+static int cmd_info_r(char *args)  
+{  
+    char *arg=strtok(NULL," ");  
+    if(strcmp(arg,"r")==0)  {  
+         int i;
+        for(i=0;i<8;i++) {  
+            printf("%s %x %d\n",regsl[i],cpu.gpr[i]._32,cpu.gpr[i]._32);  
+        }  
+    }  
+    return 0;  
+}  
+
 static struct {
 	char *name;
 	char *description;
@@ -66,6 +78,7 @@ static struct {
 	{ "c", "Continue the execution of the program", cmd_c },
 	{ "q", "Exit NEMU", cmd_q },
         { "si","Single step execution N instructions then pause",cmd_si },
+        { "info r","Print the values of all registers",cmd_info_r},
        
 	/* TODO: Add more commands */
 
