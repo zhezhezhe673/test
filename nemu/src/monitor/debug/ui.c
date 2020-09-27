@@ -51,7 +51,8 @@ char *arg = strtok(NULL, " ");
     { 
 		cpu_exec(i);
 	}
-    else printf("Parameter error\n");
+    else {if(i==-1) cpu_exec(-1);
+    else  printf("Parameter error\n");}
     }
 	return 0;
 }
