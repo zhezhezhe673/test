@@ -7,8 +7,14 @@
 #include <regex.h>
 
 enum {
-	NOTYPE = 256, EQ
-
+	NOTYPE = 256, EQ=255,
+	jia=254,
+    jian=253,
+	cheng=252,
+	chu=251,
+	zhengshu=250,
+	zuokuohao=249,
+	youkuohao=248
 	/* TODO: Add more token types */
 
 };
@@ -24,7 +30,13 @@ static struct rule {
 
 	{" +",	NOTYPE},				// spaces
 	{"\\+", '+'},					// plus
-	{"==", EQ}						// equal
+	{"==", EQ},						// equal
+	{"-",jian},                       //jian
+    {"\\*",cheng},                     //cheng
+	{"/",chu},                       //chu
+	{"[0-9]*",zhengshu},           //zhengshu
+	{"\\(",zuokuohao},
+	{"\\)",youkuohao}
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -77,8 +89,33 @@ static bool make_token(char *e) {
 				 * to record the token in the array `tokens'. For certain types
 				 * of tokens, some extra actions should be performed.
 				 */
-
 				switch(rules[i].token_type) {
+					case NOTYPE:
+					break;
+					case '+':
+					tokens[nr_token++].type=254;
+					break;
+					case EQ:
+					tokens[nr_token++].type=255;
+					break;
+					case jian:
+					tokens[nr_token++].type=253;
+					break;
+					case cheng:
+					tokens[nr_token++].type=252;
+					break;
+					case chu:
+					tokens[nr_token++].type=251;
+					case zhengshu:
+					tokens[nr_token++].type=250;
+					strncpy(tokens[nr_token].str,substr_start,substr_len);
+					break;
+					case zuokuohao:
+					tokens[nr_token++].type=249;
+					break;
+					case youkuohao:
+					tokens[nr_token++].type=248;
+					break;
 					default: panic("please implement me");
 				}
 
