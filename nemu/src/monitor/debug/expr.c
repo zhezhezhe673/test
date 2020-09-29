@@ -29,7 +29,7 @@ static struct rule {
 	 */
 
 	{" +",	NOTYPE},				// spaces
-	{"\\+", '+'},					// plus
+	{"\\+", jia},					// plus
 	{"==", EQ},						// equal
 	{"-",jian},                       //jian
     {"\\*",cheng},                     //cheng
