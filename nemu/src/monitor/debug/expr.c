@@ -27,29 +27,30 @@ static struct rule
 {
 	char *regex;
 	int token_type;
+	int youxianji;
 } rules[] = {
 
 	/* TODO: Add more rules.
 	 * Pay attention to the precedence level of different rules.
 	 */
 
-	{" +", NOTYPE}, // spaces
-	{"\\(", '('},
-	{"\\)", ')'},
-	{"\\*", '*'},			   //cheng
-	{"/", '/'},				   //chu
-	{"-", '-'},				   //jian
-	{"\\+", '+'},			   // plus
-	{"[0-9]{1,10}", zhengshu}, //zhengshu
-	{"==", EQ},				   // equal
-	{"!=", NEQ},
-	{"&&", yu},
-	{"\\|\\|", huo},
-	{"!", fei},
-	{"0[xX][A-Fa-f0-9]{1,8}", TK_hex},//后面是否需要'+'						   //16进制数字
-	{"\\$[a-dA-D]|\\$[eE]?(ax|dx|cx|bx|bp|si|di|sp)", TK_reg}, //寄存器
-	{"-",fushu},//负数
-	{"*",zhizhen}//指针
+	{" +", NOTYPE,0}, // spaces
+	{"\\(", '(',1},
+	{"\\)", ')',1},
+	{"\\*", '*',3},			   //cheng
+	{"/", '/',3},				   //chu
+	{"-", '-',4},				   //jian
+	{"\\+", '+',4},			   // plus
+	{"[0-9]{1,10}", zhengshu,0}, //zhengshu
+	{"==", EQ,7},				   // equal
+	{"!=", NEQ,7},
+	{"&&", yu,11},
+	{"\\|\\|", huo,12},
+	{"!", fei,2},
+	{"0[xX][A-Fa-f0-9]{1,8}", TK_hex,0},//后面是否需要'+'						   //16进制数字
+	{"\\$[a-dA-D]|\\$[eE]?(ax|dx|cx|bx|bp|si|di|sp)", TK_reg,0}, //寄存器
+	//{"-",fushu},//负数
+	//{"*",zhizhen}//指针
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]))
