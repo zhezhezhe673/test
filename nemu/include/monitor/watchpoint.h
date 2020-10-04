@@ -6,6 +6,14 @@
 typedef struct watchpoint {
 	int NO;
 	struct watchpoint *next;
+	int jiu;
+	int xin;
+	char str[32];
 } WP;
-
+void wp_pool1();
+void wp_pool2();
+void init_wp_pool();
+WP* new_wp(char *strr);
+void free_wp(WP* wp);
+int  check_wp();
 #endif

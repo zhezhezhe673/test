@@ -4,11 +4,28 @@
 #define NR_WP 32
 static WP wp_pool[NR_WP];
 static WP *head, *free_;
+void wp_pool1(){
+printf("Num\t\tNewValue\tWhat\n");
+	int i;
+	for( i=0;i<32;i++){
+    printf("%4d\t\t0x%x\t%s\n",wp_pool[i].NO,wp_pool[i].xin,wp_pool[i].str);		
+}}
+void wp_pool2()
+{
+	int i;
+	for( i=0;i<32;i++){
+     if (strcmp(wp_pool[i].str,"0")!=0)
+	 {
+		 free_wp(wp_pool+i);
+	 }	 	
+	}
+}
 void init_wp_pool() {
 	int i;
 	for(i = 0; i < NR_WP; i ++) {
 		wp_pool[i].NO = i;
 		wp_pool[i].next = &wp_pool[i + 1];
+		strcpy(wp_pool[i].str,"0");
 	}
 	wp_pool[NR_WP - 1].next = NULL;
 
@@ -16,5 +33,63 @@ void init_wp_pool() {
 	free_ = wp_pool;
 }
 /* TODO: Implement the functionality of watchpoint */
+WP* new_wp(char *strr){
+	WP* q=NULL;
+	WP* r=NULL;
+	r=free_;
+	if(r==NULL){assert(0);}
+	else{free_=free_->next;
+	strcpy(r->str,strr);
+    q=head;
+	while(q->next!=NULL){
+		q=q->next;
+	}
+		q->next=r;
+		r->next=NULL;
+		bool success;
+		r->jiu=expr(strr,&success);
+		return r;
+	}
+};
 
+void free_wp(WP* wp){
+	WP* p;
+	WP* q;
+	WP *r;
+	q=head;
+	if(strcmp(q->str,wp->str)==0){
+		strcpy(head->str,"0");
+        p=free_;
+		while(p->next!=NULL)
+		    p=p->next;
+        p->next=head;
+		head=head->next;
+		q->next=NULL;
+	}
+	else{
+		while(strcmp(q->next->str,wp->str)!=0){
+			q=q->next;
+		}
+		r=q->next;
+		strcpy(q->next->str,"0");
+        q->next=r->next;
+		r->next=NULL;
+        p=free_;
+		while(p->next!=NULL)
+		    p=p->next;
+        p->next=r;
+	}
+}
 
+int  check_wp(){
+WP *p;
+bool success;
+p=head;
+if(p==NULL)return 0;
+while(p){
+	p->xin=expr(p->str,&success);
+	if(p->xin!=p->jiu)return -1;
+	p=p->next;
+}	
+return 0;
+}

@@ -1,7 +1,7 @@
 #include "monitor/monitor.h"
 #include "cpu/helper.h"
 #include <setjmp.h>
-
+#include "monitor/watchpoint.h"
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
@@ -71,7 +71,14 @@ void cpu_exec(volatile uint32_t n) {
 			printf("%s\n", asm_buf);
 		}
 #endif
-
+       
+	   int biao;
+	   biao=check_wp();
+	   if(biao==-1){
+		   nemu_state=STOP;
+		   printf("你触发了间断点\n");
+		   return;
+	   }
 		/* TODO: check watchpoints here. */
 
 #ifdef HAS_DEVICE

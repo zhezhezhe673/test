@@ -66,6 +66,9 @@ static int cmd_info_r(char *args)
             printf("%s %x %d\n",regsl[i],cpu.gpr[i]._32,cpu.gpr[i]._32);  
         }  
     }  
+	else if(strcmp(arg,"w")==0) {
+	wp_pool1();
+	}
     return 0;  
 }  
 
@@ -98,6 +101,11 @@ static int cmd_p(char *args)
 	printf("%d\n",j);
 	return 0;
 };
+
+static int cmd_d(char *args){
+wp_pool2();
+return 0;
+}
 static struct {
 	char *name;
 	char *description;
@@ -109,7 +117,8 @@ static struct {
     { "si","Single step execution N instructions then pause",cmd_si },
     { "info","Print the values of all registers",cmd_info_r},
     {"x", "sao miao nei cun",cmd_saomiao}, 
-	{"p","计算表达式",cmd_p}  
+	{"p","计算表达式",cmd_p},
+	{"d","删除监视点",cmd_d}  
 	/* TODO: Add more commands */
 
 };
