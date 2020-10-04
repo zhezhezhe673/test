@@ -110,6 +110,7 @@ return 0;
 static int cmd_w(char *args){
 	char *arg=strtok(NULL," ");
 	new_wp(arg);
+	printf("Set a watchpoint at %s\n",arg);
 	return 0;
 }
 static struct {
