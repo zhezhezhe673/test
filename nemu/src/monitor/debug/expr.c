@@ -186,6 +186,26 @@ static bool make_token(char *e)
 	return true;
 }
 
+bool check_parentheses(int p, int q)
+{
+	int left = 0;
+	int i;
+	for (i = p; i <= q; i++)
+	{
+		if (tokens[i].type == '(')
+			left++;
+		if (tokens[i].type == ')')
+			left--;
+		if (left < 0)
+			assert(0);
+		if (left == 0 && i != q)
+			return 0;
+	}
+	if (left)
+		assert(0);
+	return 1;
+}
+
 int priority(int type)
 {
 	switch (type)
@@ -279,25 +299,6 @@ int find_dominant_operator(int p, int q)
 	}
 	return op;
 }
-bool check_parentheses(int p, int q)
-{
-	int left = 0;
-	int i;
-	for (i = p; i <= q; i++)
-	{
-		if (tokens[i].type == '(')
-			left++;
-		if (tokens[i].type == ')')
-			left--;
-		if (left < 0)
-			assert(0);
-		if (left == 0 && i != q)
-			return 0;
-	}
-	if (left)
-		assert(0);
-	return 1;
-}
 
 static int eval(int p, int q)
 {
@@ -308,18 +309,16 @@ static int eval(int p, int q)
 	}
 	else if (p == q)
 	{
-		if (tokens[p].type == 264) //10进制
+		if (tokens[p].type == zhengshu) //10进制
 		{
 			sscanf(tokens[p].str, "%d", &i);
-			return i;
 		}
-		else if (tokens[p].type == 265) //r 16进制
+		else if (tokens[p].type == TK_hex) //r 16进制
 		{
 			sscanf(tokens[p].str, "%x", &i);
-			return i;
 		}
-		else if (tokens[p].type == 262)
-		{
+		else if (tokens[p].type == TK_reg)
+		{   int jj=0;
 			int sl = 1, sw = 1, sb = 1;
 			for (; i < 8 && sl != 0 && sw != 0 && sb; i++)
 			{
@@ -328,11 +327,11 @@ static int eval(int p, int q)
 				sb = strcmp(tokens[p].str + 1, regsb[i]);
 			}
 			if (!sl)
-				i = reg_l(i);
+				i = reg_l(jj);
 			if (!sw)
-				i = reg_w(i);
+				i = reg_w(jj);
 			if (!sb)
-				i = reg_b(i);
+				i = reg_b(jj);
 		}
 		return i; //...............
 	}
@@ -344,7 +343,7 @@ static int eval(int p, int q)
 	{
 		if ((q - p == 1) && tokens[p].type == fushu)
 			return 0 - eval(q, q);
-		if (((q - p == 1) || (tokens[p + 1].type == '(' && tokens[q].type == ')')) && tokens[p].type == 261)
+		if ((tokens[p].type ==fei)&&((q - p == 1) || (tokens[p + 1].type == '(' && tokens[q].type == ')'))) 
 		{
 			i = eval(p + 1, q);
 			return !i;
