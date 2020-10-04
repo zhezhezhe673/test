@@ -9,14 +9,14 @@
 enum
 {
 	NOTYPE = 256,
-	EQ = 257,
-	NEQ = 258,
-	yu = 259,
-	huo = 260,
-	fei = 261,
-	TK_reg = 262,
-	zhengshu = 264,
-	TK_hex = 265,
+	EQ ,
+	NEQ ,
+	yu ,
+	huo,
+	fei,
+	TK_reg,
+	zhengshu,
+	TK_hex,
 	fushu,
 	zhizhen
 	/* TODO: Add more token types */
@@ -47,8 +47,8 @@ static struct rule
 	{"&&", yu,11},
 	{"\\|\\|", huo,12},
 	{"!", fei,2},
-	{"0[xX][A-Fa-f0-9]{1,8}", TK_hex,0},//后面是否需要'+'						   //16进制数字
-	{"\\$[a-dA-D]|\\$[eE]?(ax|dx|cx|bx|bp|si|di|sp)", TK_reg,0}, //寄存器
+	{"0[xX][A-Fa-f0-9]{1,8}+", TK_hex,0},//后面是否需要'+'						   //16进制数字
+	{"\\$[a-dA-D][h|HL]|\\$[eE]?(ax|dx|cx|bx|bp|si|di|sp|ip)", TK_reg,0}, //寄存器
 	//{"-",fushu},//负数
 	//{"*",zhizhen}//指针
 };
@@ -112,67 +112,66 @@ static bool make_token(char *e)
 				 * of tokens, some extra actions should be performed.
 				 */
 				switch (rules[i].token_type)
-				{
+				{case NOTYPE:
+					nr_token--;
+					break;
+				case '(':
+					tokens[nr_token].type = 40;
+					break;
+				case ')':
+					tokens[nr_token].type = 41;
+					break;
+				case '-':
+					tokens[nr_token].type = 45;
+					break;
+				case '+':
+					tokens[nr_token].type = 43;
+					break;
+				case '*':
+					tokens[nr_token].type = 42;
+					break;
+				case '/':
+					tokens[nr_token].type = 47;
+					break;
 				case EQ:
 					tokens[nr_token++].type = 257;
 					strcpy(tokens[nr_token].str, "==");
 					break;
-				case NOTYPE:
+				case zhengshu:
+					tokens[nr_token].type = zhengshu;
+					if(substr_len>31)assert(0);
+					strncpy(tokens[nr_token].str, &e[position-substr_len],substr_len);
 					break;
-				case '(':
-					tokens[nr_token++].type = 40;
-					break;
-				case ')':
-					tokens[nr_token++].type = 41;
-					break;
-				case '*':
-					tokens[nr_token++].type = 42;
-					break;
-				case '/':
-					tokens[nr_token++].type = 47;
-				case '+':
-					tokens[nr_token++].type = 43;
-					break;
-				case '-':
-					tokens[nr_token++].type = 45;
-					break;
-
-				case 258:
-					tokens[nr_token++].type = 258;
+				case NEQ:
+					tokens[nr_token].type = NEQ;
 					strcpy(tokens[nr_token].str, "!=");
 					break;
-				case 259:
-					tokens[nr_token++].type = 259;
+				case yu:
+					tokens[nr_token].type = yu;
 					strcpy(tokens[nr_token].str, "&&");
 					break;
-				case 260:
-					tokens[nr_token++].type = 260;
-					strcpy(tokens[nr_token].str, "||");
-					break;
-				case 261:
-					tokens[nr_token++].type = 261;
+				case huo:
+					tokens[nr_token].type = huo;
 					break;
 
-				case 262:
-					tokens[nr_token++].type = 262;
+				case fei:
+					tokens[nr_token++].type = fei;
+					strcpy(tokens[nr_token].str, "!");
+					break;
+				case TK_hex:
+					tokens[nr_token++].type = TK_hex;
+					if(substr_len>31)assert(0);
 					strncpy(tokens[nr_token].str, &e[position - substr_len], substr_len);
 					break;
-				case 263:
-					tokens[nr_token++].type = 263;
-					strncpy(tokens[nr_token].str, &e[position - substr_len], substr_len);
-					break;
-				case 264:
-					tokens[nr_token++].type = 264;
-					strncpy(tokens[nr_token].str, &e[position - substr_len], substr_len);
-					break;
-				case 265:
-					tokens[nr_token++].type = 265;
+				case TK_reg:
+					tokens[nr_token++].type = TK_reg;
+					if(substr_len>31)assert(0);
 					strncpy(tokens[nr_token].str, &e[position - substr_len], substr_len);
 					break;
 				default:
 					panic("please implement me");
 				}
-
+                 nr_token++;
 				break;
 			}
 		}
