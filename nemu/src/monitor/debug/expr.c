@@ -16,7 +16,9 @@ enum
 	fei = 261,
 	TK_reg = 262,
 	zhengshu = 264,
-	TK_hex = 265
+	TK_hex = 265,
+	fushu,
+	zhizhen
 	/* TODO: Add more token types */
 
 };
@@ -44,8 +46,10 @@ static struct rule
 	{"&&", yu},
 	{"\\|\\|", huo},
 	{"!", fei},
-	{"0[xX][A-Fa-f0-9]{1,8}", TK_hex},						   //16进制数字
+	{"0[xX][A-Fa-f0-9]{1,8}", TK_hex},//后面是否需要'+'						   //16进制数字
 	{"\\$[a-dA-D]|\\$[eE]?(ax|dx|cx|bx|bp|si|di|sp)", TK_reg}, //寄存器
+	{"-",fushu},//负数
+	{"*",zhizhen}//指针
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]))
@@ -182,179 +186,125 @@ static bool make_token(char *e)
 	return true;
 }
 
-static int find_dominant_operator(char *e)
+int priority(int type)
 {
-	int e_chang = strlen(e);
-	int jilushu[e_chang]; //记录e中每个符号的优先级顺序，初始化为0，代表是数字,左括号记为10，右括号记为11；
-	char fuhao[e_chang + 1];	//记录e的每个符号，他们之间是一一对应的关系；
-	int dengji[e_chang];	//记录符号的优先级顺序；
+	switch (type)
+	{
+	case NOTYPE:
+		break;
+	case '(':
+		return 1;
+		break;
+	case ')':
+		return 1;
+		break;
+	case '-':
+		return 4;
+		break;
+	case '+':
+		return 4;
+		break;
+	case '*':
+		return 3;
+		break;
+	case '/':
+		return 3;
+		break;
+	case EQ:
+		return 7;
+		break;
+	case zhengshu:
+		return -1;
+		break;
+	case NEQ:
+		return 7;
+		break;
+	case yu:
+		return 11;
+		break;
+	case huo:
+		return 12;
+		break;
+	case fei:
+		return 2;
+		break;
+	case TK_hex:
+		return -1;
+		break;
+	case TK_reg:
+		return -1;
+	case fushu:
+	    return 0;
+	case zhizhen:
+	    return 0;
+	default:
+		panic("please implement me");
+	}
+	return -2;
+}
+
+int find_dominant_operator(int p, int q)
+{
+	int op = -1;
+	int op_p = 0;
 	int i;
-	for(i=0;i<e_chang;i++){
-		jilushu[i]=0;
-		dengji[i]=0;
-	}
-	for (i = 0; i < e_chang; i++)
+	int i_p = 0;
+	int cnt = 0;
+	for (i = p; i <= q; i++)
 	{
-		if (e[i] == '(')
+		if (tokens[i].type == '(')
+			cnt++;
+		if (tokens[i].type == ')')
+			cnt--;
+		int ss = 0; //find op_priority
+		for (; ss < NR_REGEX; ss++)
 		{
-			jilushu[i] = 10;
-			fuhao[i] = '(';
-			dengji[i] = 99;
-		}
-		if (e[i] == ')')
-		{
-			jilushu[i] = 11;
-			fuhao[i] = ')';
-			dengji[i] = 100;
-		}
-		if (e[i] == '!' && e[i + 1] != '=')
-		{
-			jilushu[i] = 261;
-			fuhao[i] = '!';
-			dengji[i] = 261;
-		}
-		if (e[i] == '*')
-		{
-			jilushu[i] = 8;
-			fuhao[i] = '*';
-			dengji[i] = 8;
-		}
-		if (e[i] == '/')
-		{
-			jilushu[i] = 7;
-			fuhao[i] = '/';
-			dengji[i] = 8;
-		}
-		if (e[i] == '+')
-		{
-			jilushu[i] = 6;
-			fuhao[i] = '+';
-			dengji[i] = 7;
-		}
-		if (e[i] == '-')
-		{
-			jilushu[i] = 5;
-			fuhao[i] = '-';
-			dengji[i] = 7;
-		}
-		if (e[i] == '=' && e[i + 1] == '=')
-		{
-			jilushu[i] = 4;
-			fuhao[i] = '=';
-			dengji[i] = 257;
-			++i;
-			dengji[i] = 257; //对双运算符两个等级位设置成相同的；
-		}
-		if (e[i] == '!' && e[i + 1] == '=')
-		{
-			jilushu[i] = 3;
-			fuhao[i] = '!';
-			fuhao[i + 1] = '=';
-			dengji[i] = 258;
-			++i;
-			dengji[i] = 258;
-		}
-		if (e[i] == '&')
-		{
-			jilushu[i] = 2;
-			fuhao[i] = '&';
-			dengji[i] = 259;
-			++i;
-			dengji[i] = 259;
-		}
-		if (e[i] == '|')
-		{
-			jilushu[i] = 1;
-			fuhao[i] = '|';
-			dengji[i] = 260;
-			++i;
-			dengji[i] = 260;
-		}
-	}
-	int j;
-	int min_po = 0;	 //运算符等级最小的位置；
-	int po_zuo = -1; //第一个左括号的位置；
-	int po_you = -1; //最后一个右括号的位置；
-	for (j = 0; j < e_chang; j++)
-	{
-		if (dengji[j] == 99)
-		{
-			po_zuo = j;
-			break;
-		}
-	}
-	for (j = e_chang - 1; j > 0; j--)
-	{
-		if (dengji[j] == 100)
-		{
-			po_you = j;
-			break;
-		}
-	}
-	for (j = po_zuo; j <= po_you; j++)
-	{
-		dengji[j] = 98;
-	}
-	int er_or_yi = 1; //最终是二元运算符（包括!)（为1）还是一元运算符（为0）；
-	for (j = 0; j < e_chang; j++)
-	{
-		if (dengji[min_po] >= dengji[j] && dengji[j] < 100 && dengji[j] != 0)
-		{
-			er_or_yi = 0;
-			min_po = j;
-		}
-	}
-
-	if (er_or_yi == 1)
-	{
-
-		for (j = 0; j < e_chang; j++)
-		{
-			if (dengji[min_po] <= dengji[j] && dengji[j] > 100)
+			if (tokens[i].type == rules[ss].token_type)
 			{
-				min_po = j;
+				i_p = priority(tokens[i].type);
+				break;
+			}
+			if(tokens[i].type==zhizhen){
+				i_p=priority(zhizhen);
+			}
+			if(tokens[i].type==fushu){
+				i_p=priority(fushu);
 			}
 		}
+		if (cnt == 0 && op_p <= i_p)
+		{
+			op = i;
+			op_p = i_p;
+		}
 	}
-	return min_po;
+	return op;
 }
-static bool check_parentheses(int p, int q, char *e)
+bool check_parentheses(int p, int q)
 {
-	   if((e[p]!='(')||(e[q]!=')'))return false;
-	   else {
-		int e_chang = strlen(e);
-		int zuokuo_shumu[e_chang]; //记录左括号的数目；
-		int youkuo_shumu[e_chang]; //记录右括号的数目；
-		int i;
-		for(i=0;i<e_chang;i++){
-			zuokuo_shumu[i]=0;
-			youkuo_shumu[i]=0;
-		}
-		for (i = 0; i < e_chang; i++)
-		{
-			if (e[i] == '(')
-				zuokuo_shumu[i]++;
-			if (e[i] == ')')
-				youkuo_shumu[i]++;
-		}
-		for (i = 0; i < e_chang; i++)
-		{
-			if (zuokuo_shumu[i] < youkuo_shumu[i])
-				assert(0);
-		}
-		for (i = 0; i < e_chang - 1; i++)
-		{
-			if (zuokuo_shumu[i] == youkuo_shumu[i])
-				return false;
-		}
-	   }
-	   return true;
+	int left = 0;
+	int i;
+	for (i = p; i <= q; i++)
+	{
+		if (tokens[i].type == '(')
+			left++;
+		if (tokens[i].type == ')')
+			left--;
+		if (left < 0)
+			assert(0);
+		if (left == 0 && i != q)
+			return 0;
+	}
+	if (left)
+		assert(0);
+	return 1;
 }
-static int eval(int p, int q, char *e)
-{   int i=0;
+
+static int eval(int p, int q)
+{
+	int i = 0;
 	if (p > q)
 	{
-		return 0;
+		assert(0);
 	}
 	else if (p == q)
 	{
@@ -370,71 +320,43 @@ static int eval(int p, int q, char *e)
 		}
 		else if (tokens[p].type == 262)
 		{
-			int j = 0, sl = 1, sw = 1;
-			for (; j < 8 && sl != 0 && sw != 0; j++)
+			int sl = 1, sw = 1, sb = 1;
+			for (; i < 8 && sl != 0 && sw != 0 && sb; i++)
 			{
 				sl = strcmp(tokens[p].str + 1, regsl[i]);
 				sw = strcmp(tokens[p].str + 1, regsw[i]);
+				sb = strcmp(tokens[p].str + 1, regsb[i]);
 			}
-			if (sl == 0)
-			{
-				i = cpu.gpr[j]._32;
-				return i;
-			}
-			else if (sw == 0)
-				return cpu.gpr[j]._16;
-			else
-			{
-				if (strcmp(tokens[p].str, "$al") == 0)
-					return reg_b(0);
-				if (strcmp(tokens[p].str + 1, "cl") == 0)
-					return reg_b(1);
-				if (strcmp(tokens[p].str + 1, "dl") == 0)
-					return reg_b(2);
-				if (strcmp(tokens[p].str + 1, "bl") == 0)
-					return reg_b(3);
-				if (strcmp(tokens[p].str + 1, "ah") == 0)
-					return reg_b(4);
-				if (strcmp(tokens[p].str + 1, "ch") == 0)
-					return reg_b(5);
-				if (strcmp(tokens[p].str + 1, "dh") == 0)
-					return reg_b(6);
-				if (strcmp(tokens[p].str + 1, "bh") == 0)
-					return reg_b(7);
-			}
-			if (j == 8)
-				assert(0);
+			if (!sl)
+				i = reg_l(i);
+			if (!sw)
+				i = reg_w(i);
+			if (!sb)
+				i = reg_b(i);
 		}
-		else
-			assert(0); //...............
+		return i; //...............
 	}
-	else if (check_parentheses(p,q,e) == true)
+	else if (check_parentheses(p, q) == true)
 	{
-		return eval(p + 1, q - 1,e);
+		return eval(p + 1, q - 1);
 	}
 	else
-	{   
-		if((q-p==1)&&tokens[p].type=='-')
-		   return 0-eval(q,q,e);
-		if(((q-p==1)||(tokens[p+1].type=='('&&tokens[q].type==')'))&&tokens[p].type==261){
-			i=eval(p+1,q,e);
-            return !i;
-		}
-		if(((q-p==1)||(tokens[p+1].type=='('&&tokens[q].type==')'))&&tokens[p].type=='*'){
-			return swaddr_read(eval(p+1,q,e),4);
-		}
-		char dest[q - p + 2];
-		dest[q-p+1]='\0';
-		strncpy(dest, e + p, q - p); //复制到数组中了，所以没有\0也没有关系；
-		int val2=0;
-		int val1=0;
-		int po_do_op = find_dominant_operator(dest); //dominat_operator的位置；
-		if (dest[po_do_op] == '=' || dest[po_do_op] == '&' || dest[po_do_op] == '|')
+	{
+		if ((q - p == 1) && tokens[p].type == fushu)
+			return 0 - eval(q, q);
+		if (((q - p == 1) || (tokens[p + 1].type == '(' && tokens[q].type == ')')) && tokens[p].type == 261)
 		{
-			val1 = eval(p, po_do_op - 2, e);
-			val2 = eval(po_do_op + 1, q, e);
+			i = eval(p + 1, q);
+			return !i;
 		}
-		switch (dest[po_do_op])
+		if (tokens[p].type == zhizhen&&((q - p == 1)|| (tokens[p + 1].type == '(' && tokens[q].type == ')'))) 
+		{
+			return swaddr_read(eval(p + 1, q), 4);
+		}//如果是指针的话；
+		int po_do_op = find_dominant_operator(p, q); //dominat_operator的位置；
+		int val1 = eval(p, po_do_op - 1);
+		int val2 = eval(po_do_op + 1, q);
+		switch (tokens[po_do_op].type)
 		{
 		case '+':
 			return val1 + val2;
@@ -444,34 +366,23 @@ static int eval(int p, int q, char *e)
 			return val1 * val2;
 		case '/':
 			return val1 / val2;
-		case '=':
-			if (dest[po_do_op - 1] == '=')
-			{
-				if (val1 == val2)
-					return 1;
-				else
-					return 0;
-			}
-			else
-			{
-				if (val1 != val2)
-					return 1;
-				else
-					return 0;
-			}
-		case '&':
-			if (val1 && val2)
+		case huo:
+			return val1 || val2;
+		case yu:
+			return val1 && val2;
+		case EQ:
+			if (val1 == val2)
 				return 1;
 			else
 				return 0;
-		case '|':
-			if (val1 || val2)
-				return 1;
-		case '!':
-			if (val2 != 0)
-				return 0;
-			else
-				return 1;
+		case NEQ:
+			return val1 != val2;
+		case fei:
+			return !val2;
+		case fushu:
+		    return 0-val2;
+		case zhizhen:
+		    return swaddr_read(eval(p+1,q),4); 
 		default:
 			assert(0);
 		}
@@ -485,13 +396,15 @@ uint32_t expr(char *e, bool *success)
 		*success = false;
 		return 0;
 	}
-	else
+	int i;
+	for (i = 0; i < nr_token; i++)
 	{
-		int e_chan = strlen(e); //e的长度；
-		int p = 0;
-		int q = e_chan - 1;
-		eval(p, q, e);
+		if (tokens[i].type == '*' && (i == 0 || (tokens[i - 1].type != TK_hex && tokens[i - 1].type != TK_reg && tokens[i - 1].type != zhengshu && tokens[i - 1].type != ')')))
+			tokens[i].type = zhizhen;
+		if (tokens[i].type == '-' && (i == 0 || (tokens[i - 1].type != TK_hex && tokens[i - 1].type != TK_reg&& tokens[i - 1].type != zhengshu && tokens[i - 1].type != ')')))
+			tokens[i].type = fushu;
 	}
+	return eval(0,nr_token);
 	/* TODO: Insert codes to evaluate the expression. */
 	panic("please implement me");
 	return 0;
