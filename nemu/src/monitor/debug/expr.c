@@ -182,7 +182,7 @@ static bool make_token(char *e)
 			return false;
 		} //。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。这里暂时不懂
 	}
-
+        nr_token--;
 	return true;
 }
 
