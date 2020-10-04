@@ -318,20 +318,20 @@ static int eval(int p, int q)
 			sscanf(tokens[p].str, "%x", &i);
 		}
 		else if (tokens[p].type == TK_reg)
-		{   int jj=0;
+		{   int j=0;
 			int sl = 1, sw = 1, sb = 1;
-			for (; i < 8 && sl != 0 && sw != 0 && sb; i++)
+			for (; j < 8 && sl != 0 && sw != 0 && sb; j++)
 			{
-				sl = strcmp(tokens[p].str + 1, regsl[i]);
-				sw = strcmp(tokens[p].str + 1, regsw[i]);
-				sb = strcmp(tokens[p].str + 1, regsb[i]);
-			}
+				sl = strcmp(tokens[p].str + 1, regsl[j]);
+				sw = strcmp(tokens[p].str + 1, regsw[j]);
+				sb = strcmp(tokens[p].str + 1, regsb[j]);
+			}j--;
 			if (!sl)
-				i = reg_l(jj);
+				i = reg_l(j);
 			if (!sw)
-				i = reg_w(jj);
+				i = reg_w(j);
 			if (!sb)
-				i = reg_b(jj);
+				i = reg_b(j);
 		}
 		return i; //...............
 	}
