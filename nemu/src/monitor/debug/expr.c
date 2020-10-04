@@ -404,7 +404,7 @@ uint32_t expr(char *e, bool *success)
 		if (tokens[i].type == '-' && (i == 0 || (tokens[i - 1].type != TK_hex && tokens[i - 1].type != TK_reg&& tokens[i - 1].type != zhengshu && tokens[i - 1].type != ')')))
 			tokens[i].type = fushu;
 	}
-	return eval(0,nr_token - 1);
+	return eval(0,nr_token);
 	/* TODO: Insert codes to evaluate the expression. */
 	panic("please implement me");
 	return 0;
