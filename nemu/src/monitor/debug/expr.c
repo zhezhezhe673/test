@@ -333,6 +333,7 @@ static int eval(int p, int q)
 			if (!sb)
 				i = reg_b(j);
 		}
+		printf("%d\n",i);
 		return i; //...............
 	}
 	else if (check_parentheses(p, q) == true)
