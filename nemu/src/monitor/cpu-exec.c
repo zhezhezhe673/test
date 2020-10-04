@@ -74,7 +74,6 @@ void cpu_exec(volatile uint32_t n) {
 
 		/* TODO: check watchpoints here. */
 
-
 #ifdef HAS_DEVICE
 		extern void device_update();
 		device_update();

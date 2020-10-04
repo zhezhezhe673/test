@@ -80,14 +80,22 @@ static int cmd_saomiao(char *args)
 	printf("0x%x:",zanshi);
 	int iii;
 	for(iii=0;iii<j;iii++){
-		printf("%08x",swaddr_read(zanshi,4)&0xffffffff); 
-                printf(" ");
-                zanshi+=4;
+		printf("%08x",swaddr_read(zanshi,4)&0xffffffff);
+		printf(" ");
+		zanshi+=4;
 	}
 	printf("\n");
 	return 0;
 }
 
+static int cmd_p(char *args)
+{
+	char *arg=strtok(NULL," "); 
+	bool success;
+	success=true;
+	expr(arg,&success);
+	return 0;
+};
 static struct {
 	char *name;
 	char *description;
@@ -96,10 +104,10 @@ static struct {
 	{ "help", "Display informations about all supported commands", cmd_help },
 	{ "c", "Continue the execution of the program", cmd_c },
 	{ "q", "Exit NEMU", cmd_q },
-        { "si","Single step execution N instructions then pause",cmd_si },
-        { "info","Print the values of all registers",cmd_info_r},
-        {"x", "sao miao nei cun",cmd_saomiao},
-       
+    { "si","Single step execution N instructions then pause",cmd_si },
+    { "info","Print the values of all registers",cmd_info_r},
+    {"x", "sao miao nei cun",cmd_saomiao}, 
+	{"p","计算表达式",cmd_p}  
 	/* TODO: Add more commands */
 
 };
