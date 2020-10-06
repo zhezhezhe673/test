@@ -109,6 +109,7 @@ return 0;
 
 static int cmd_w(char *args){
 	char *arg=strtok(NULL," ");
+	printf("i am sb1");
 	WP* l=new_wp(arg);
 	printf("Set a watchpoint at %s\n",l->str);
 	return 0;
