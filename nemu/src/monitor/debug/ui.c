@@ -107,9 +107,9 @@ wp_pool2();
 return 0;
 }
 
-static int cmd_w(char *args){
+static int cmd_w(char *args){printf("i am sb1");
 	char *arg=strtok(NULL," ");
-	printf("i am sb1");
+	
 	WP* l=new_wp(arg);
 	printf("Set a watchpoint at %s\n",l->str);
 	return 0;
