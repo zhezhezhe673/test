@@ -5,10 +5,10 @@
 static WP wp_pool[NR_WP];
 static WP *head, *free_;
 void wp_pool1(){
-printf("Num\t\tNewValue\tWhat\n");
+printf("Num\t\tOldValue\t\tNewValue\tWhat\n");
 	int i;
 	for( i=0;i<32;i++){
-    printf("%4d\t\t0x%x\t%s\n",wp_pool[i].NO,wp_pool[i].xin,wp_pool[i].str);		
+    printf("%4d\t\t0x%x\t\t0x%x\t\t%s\n",wp_pool[i].NO,wp_pool[i].jiu,wp_pool[i].xin,wp_pool[i].str);		
 }}
 void wp_pool2(char *arg)
 {
