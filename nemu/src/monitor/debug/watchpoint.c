@@ -10,11 +10,11 @@ printf("Num\t\tNewValue\tWhat\n");
 	for( i=0;i<32;i++){
     printf("%4d\t\t0x%x\t%s\n",wp_pool[i].NO,wp_pool[i].xin,wp_pool[i].str);		
 }}
-void wp_pool2()
+void wp_pool2(char *arg)
 {
 	int i;
 	for( i=0;i<32;i++){
-     if (strcmp(wp_pool[i].str,"0")!=0)
+     if (strcmp(wp_pool[i].str,arg)==0)
 	 {
 		 free_wp(wp_pool+i);
 	 }	 	
@@ -62,8 +62,7 @@ void free_wp(WP* wp){
 	WP *r;
 	q=head;
 	if(strcmp(q->str,wp->str)==0){
-		strcpy(head->str,"0");
-        p=free_;
+        p=free_;//未来改bug:free_是空的情况下我没有考虑；
 		while(p->next!=NULL)
 		    p=p->next;
         p->next=head;
@@ -75,7 +74,6 @@ void free_wp(WP* wp){
 			q=q->next;
 		}
 		r=q->next;
-		strcpy(q->next->str,"0");
         q->next=r->next;
 		r->next=NULL;
         p=free_;

@@ -103,13 +103,15 @@ static int cmd_p(char *args)
 };
 
 static int cmd_d(char *args){
-wp_pool2();
+char * arg=strtok(NULL," "); 
+wp_pool2(arg);
 return 0;
 }
 
 static int cmd_w(char *args){
+	char *arg=strtok(NULL," ");
 	printf("i am sb1");
-	WP* l=new_wp(args);
+	WP* l=new_wp(arg);
 	printf("Set a watchpoint at %s\n",l->str);
 	return 0;
 }
