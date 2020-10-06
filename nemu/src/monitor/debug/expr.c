@@ -152,19 +152,20 @@ static bool make_token(char *e)
 					break;
 				case huo:
 					tokens[nr_token].type = huo;
+					strcpy(tokens[nr_token].str, "||");
 					break;
 
 				case fei:
-					tokens[nr_token++].type = fei;
+					tokens[nr_token].type = fei;
 					strcpy(tokens[nr_token].str, "!");
 					break;
 				case TK_hex:
-					tokens[nr_token++].type = TK_hex;
+					tokens[nr_token].type = TK_hex;
 					if(substr_len>31)assert(0);
 					strncpy(tokens[nr_token].str, &e[position - substr_len], substr_len);
 					break;
 				case TK_reg:
-					tokens[nr_token++].type = TK_reg;
+					tokens[nr_token].type = TK_reg;
 					if(substr_len>31)assert(0);
 					strncpy(tokens[nr_token].str, &e[position - substr_len], substr_len);
 					break;
