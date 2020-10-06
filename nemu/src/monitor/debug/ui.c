@@ -105,7 +105,7 @@ static int cmd_p(char *args)
 static int cmd_d(char *args){
 char * arg=strtok(NULL," "); 
 wp_pool2(arg);
-printf("You have delete the point %s",arg);
+printf("You have delete the point %s\n",arg);
 return 0;
 }
 
