@@ -109,9 +109,8 @@ return 0;
 
 static int cmd_w(char *args){
 	printf("i am sb1");
-	// char *arg=strtok(NULL," ");
-	// WP* l=new_wp(arg);
-	// printf("Set a watchpoint at %s\n",l->str);
+	WP* l=new_wp(args);
+	printf("Set a watchpoint at %s\n",l->str);
 	return 0;
 }
 static struct {
