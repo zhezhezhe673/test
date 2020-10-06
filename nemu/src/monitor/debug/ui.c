@@ -124,10 +124,10 @@ static struct {
 	{ "q", "Exit NEMU", cmd_q },
     { "si","Single step execution N instructions then pause",cmd_si },
     { "info","Print the values of all registers",cmd_info_r},
-    {"x", "sao miao nei cun",cmd_saomiao}, 
-	{"w","设置间断点",cmd_w},
-	{"p","计算表达式",cmd_p},
-	{"d","删除监视点",cmd_d}  
+    { "x", "sao miao nei cun",cmd_saomiao}, 
+	{ "w","set a point",cmd_w},
+	{ "p","计算表达式",cmd_p},
+	{ "d","删除监视点",cmd_d}  
 	/* TODO: Add more commands */
 
 };
