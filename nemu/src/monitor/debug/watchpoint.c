@@ -33,13 +33,13 @@ void init_wp_pool() {
 	free_ = wp_pool;
 }
 /* TODO: Implement the functionality of watchpoint */
-WP* new_wp(char *strr){
+WP* new_wp(char* strr){
 	WP* q=NULL;
 	WP* r=NULL;
 	r=free_;
 	if(r==NULL){assert(0);}
 	else{free_=free_->next;
-	strcpy(r->str,strr);
+	strcpy(r->str,strr);    //1.
     q=head;
 	while(q->next!=NULL){
 		q=q->next;
@@ -47,7 +47,7 @@ WP* new_wp(char *strr){
 		q->next=r;
 		r->next=NULL;
 		bool success;
-		r->jiu=expr(strr,&success);
+		r->jiu=expr(strr,&success);//r是地址所以用箭头，看前面的
 		return r;
 	}
 };
