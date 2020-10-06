@@ -43,6 +43,8 @@ WP* new_wp(char* strr){
 	if(q==NULL){
 		head=r;
 		head->next=NULL;
+		bool success;
+		r->jiu=expr(strr,&success);
 		return r;
 	}
 	else{while(q->next!=NULL){
