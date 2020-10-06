@@ -40,7 +40,12 @@ WP* new_wp(char* strr){
 	else{free_=free_->next;
 	strcpy(r->str,strr);    //1.
     q=head;
-	while(q->next!=NULL){
+	if(q==NULL){
+		head=r;
+		head->next=NULL;
+		return r;
+	}
+	else{while(q->next!=NULL){
 		q=q->next;
 	}
 		q->next=r;
@@ -48,7 +53,7 @@ WP* new_wp(char* strr){
 		bool success;
 		r->jiu=expr(strr,&success);//r是地址所以用箭头，看前面的
 		return r;
-	}
+	}}
 };
 
 void free_wp(WP* wp){
