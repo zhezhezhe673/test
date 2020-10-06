@@ -25,7 +25,6 @@ void init_wp_pool() {
 	for(i = 0; i < NR_WP; i ++) {
 		wp_pool[i].NO = i;
 		wp_pool[i].next = &wp_pool[i + 1];
-		strcpy(wp_pool[i].str,"0");
 	}
 	wp_pool[NR_WP - 1].next = NULL;
 
