@@ -41,13 +41,13 @@ static struct rule
 	{"/", '/',3},				   //chu
 	{"-", '-',4},				   //jian
 	{"\\+", '+',4},			   // plus
-	{"[0-9]{1,10}", zhengshu,0}, //zhengshu
 	{"==", EQ,7},				   // equal
 	{"!=", NEQ,7},
 	{"&&", yu,11},
 	{"\\|\\|", huo,12},
 	{"!", fei,2},
 	{"0[xX][A-Fa-f0-9]{1,8}+", TK_hex,0},//后面是否需要'+'						   //16进制数字
+        {"[0-9]{1,10}", zhengshu,0}, //zhengshu
 	{"\\$[a-dA-D][h|HL]|\\$[eE]?(ax|dx|cx|bx|bp|si|di|sp|ip)", TK_reg,0}, //寄存器
 	//{"-",fushu},//负数
 	//{"*",zhizhen}//指针
