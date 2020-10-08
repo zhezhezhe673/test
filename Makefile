@@ -73,3 +73,5 @@ test: $(nemu_BIN) $(testcase_BIN) entry
 
 submit: clean
 	cd .. && zip -r $(STU_ID).zip $(shell pwd | grep -o '[^/]*$$')
+count:
+	find -name "*[h| c]" | xargs wc -l
