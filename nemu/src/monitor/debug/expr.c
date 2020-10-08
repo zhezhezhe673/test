@@ -391,7 +391,12 @@ static int eval(int p, int q)
 	return 0;
 }
 uint32_t expr(char *e, bool *success)
-{
+{       
+        int s;
+        for(s=0;s<32;s++){
+             memset(tokens[s].str,0,sizeof(tokens[s].str));
+             tokens[s].type=0;
+}
 	if (!make_token(e))
 	{
 		*success = false;
