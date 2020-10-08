@@ -62,6 +62,7 @@ static int cmd_info_r(char *args)
     char *arg=strtok(NULL," ");  
     if(strcmp(arg,"r")==0)  {  
          int i;
+		 printf("%s %s %s\n","寄存器名称","16进制","10进制");
         for(i=0;i<8;i++) {  
             printf("%s %x %d\n",regsl[i],cpu.gpr[i]._32,cpu.gpr[i]._32);  
         }  
