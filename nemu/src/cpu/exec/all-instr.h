@@ -13,6 +13,8 @@
 #include "arith/idiv.h"
 #include "arith/div.h"
 
+#include "first/jump/shuju.h"
+
 #include "logic/and.h"
 #include "logic/test.h"
 #include "logic/or.h"
