@@ -14,6 +14,7 @@
 #include "arith/div.h"
 
 #include "first/jump/shuju.h"
+#include "first/cmp/cmp.h"
 
 #include "logic/and.h"
 #include "logic/test.h"
